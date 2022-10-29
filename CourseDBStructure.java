@@ -1,8 +1,9 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class CourseDBStructure<T> implements CourseDBStructureInterface{
+
+	
 	
 	//Load factor for the assignment
 	private final double LOAD_FACTOR = 1.5;
@@ -53,15 +54,8 @@ public class CourseDBStructure<T> implements CourseDBStructureInterface{
 		//System.out.println("jgjgjg");
 
 		index = getIndex(element.getCRN());
-		//hashTable[index] = element;	
-		
-		if(hashTable[index] == null) {
-			LinkedList<CourseDBElement> bucket = new LinkedList<>();
-			bucket.add(element);
-			hashTable[index] =
-		}
-		
-		//indexes++;
+		hashTable[index] = element;	
+		indexes++;
 		//System.out.println("ola" + indexes);
 
 	}
