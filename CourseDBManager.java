@@ -1,14 +1,17 @@
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class CourseDBManager implements CourseDBManagerInterface{
 	
 	private CourseDBElement cde;
-	
-	public CourseDBManager() {
-		
-	}
+	private CourseDBStructure cds = new CourseDBStructure(13);
 
 	/**
 	 * Adds a course (CourseDBElement) with the given information
@@ -21,7 +24,8 @@ public class CourseDBManager implements CourseDBManagerInterface{
 	 */
 	@Override
 	public void add(String id, int crn, int credits, String roomNum, String instructor) {
-		cde = new CourseDBElement(id, crn, credits, roomNum, instructor);		
+		cde = new CourseDBElement(id, crn, credits, roomNum, instructor);	
+		cds.add(cde);
 	}
 
 	/**
@@ -32,20 +36,46 @@ public class CourseDBManager implements CourseDBManagerInterface{
 	 */
 	@Override
 	public CourseDBElement get(int crn) {
-		// TODO Auto-generated method stub
+		try {
+			return cds.get(crn);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	/**
-	 * Reads the information of courses from a test file and adds them
+	 * Reads the information of courses from a text file and adds them
 	 * to the CourseDBStructure data structure
-	 * @param input input file 
+	 * @param input file 
 	 * @throws FileNotFoundException if file does not exists
 	 */
 	@Override
-	public void readFile(File input) throws FileNotFoundException {
-		// TODO Auto-generated method stub
+	public void readFile(File input) throws FileNotFoundException  {
+
+		Scanner file = null;
+		String line1 = "",
+			   line2 = "";
+
+		file = new Scanner(input);
+
+		while(file.hasNext()) {
+			 line1 = file.nextLine();
+			 line2 = file.nextLine();
+		}
+		file.close();
+
+		int crn     = Integer.parseInt(line1.substring(8, 13)),
+			credits = Integer.parseInt(line1.substring(14, 15));
+		CourseDBElement cde1 = new CourseDBElement(line1.substring(0, 7), crn, credits, line1.substring(16, 21), line1.substring(22));
 		
+		crn = Integer.parseInt(line2.substring(8, 13));
+		credits = Integer.parseInt(line2.substring(14, 15));
+		CourseDBElement cde2 = new CourseDBElement(line2.substring(0, 7), crn, credits, line2.substring(16, 21), line2.substring(22));
+
+		cds.add(cde1);
+		cds.add(cde2);
+
 	}
 
 	/**
@@ -57,8 +87,7 @@ public class CourseDBManager implements CourseDBManagerInterface{
 	 */
 	@Override
 	public ArrayList<String> showAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return cds.showAll();
 	}
 
 }
