@@ -1,43 +1,31 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class CourseDBStructure<T> implements CourseDBStructureInterface{
-
-	
+public class CourseDBStructure implements CourseDBStructureInterface{
 	
 	//Load factor for the assignment
 	private final double LOAD_FACTOR = 1.5;
-	
-	//k variable (4k+3) 
-	// k = (p-3) / 4
-	private double k, size;
-	
-	private int   //Represents the number of elements the hashTable can hold
-				indexes = 0;//Represents the number of elements the hashTable currently holds
-	
+	private double size;
+		
 	//Array implementation of hashTable
-	CourseDBElement[] hashTable;
+	LinkedList hashTable[];
 	
 	public CourseDBStructure(int estimateSize) {
 
 		int sizeOverLoadFactor = (int) (estimateSize / LOAD_FACTOR);
 
-		k = find_4kPlus3Prime(sizeOverLoadFactor);
-		//k = (h - 3) / 4;
-		//System.out.println("kkkkk: " + k);
-
 		//size of the table will be a prime number higher than estimateSize.
-		size = k; 
-		System.out.println("size: " + size);
+		size = find_4kPlus3Prime(sizeOverLoadFactor);
+		//System.out.println("size: " + size);
 
-		hashTable = new CourseDBElement[(int)size];
+		hashTable = new LinkedList[(int)size];
 	}
 	
 	public CourseDBStructure(String testing, int size) {
 		this.size = size;
-		hashTable = new CourseDBElement[size];
+		hashTable = new LinkedList[size];
 	}
-	
 	
 	/** 
 	* Adds a CourseDBElement object to the CourseDBStructure using the hashcode
@@ -47,15 +35,31 @@ public class CourseDBStructure<T> implements CourseDBStructureInterface{
 	*/
 	@Override
 	public void add(CourseDBElement element) {
+		
 		//If the CourseDatabaseElement already exists, exit quietly
 		int index = getIndex(element.getCRN());
-		if(hashTable[index] != null) return;
+
+		hashTable[index] = new LinkedList<CourseDBElement>();
+		
+		//if(hashTable[index] != null) 
+		hashTable[index].add(element);
+		
+		//System.out.println(this.showAll());
+		//else
+			//head = new Node(element.getCRN(), element, null);
 		
 		//System.out.println("jgjgjg");
 
-		index = getIndex(element.getCRN());
-		hashTable[index] = element;	
-		indexes++;
+//		index = getIndex(element.getCRN());
+//		//hashTable[index] = element;	
+//		
+//		if(hashTable[index] == null) {
+//			LinkedList<CourseDBElement> bucket = new LinkedList<>();
+//			bucket.add(element);
+//			//hashTable[index] =
+//		}
+		
+		//indexes++;
 		//System.out.println("ola" + indexes);
 
 	}
@@ -81,8 +85,15 @@ public class CourseDBStructure<T> implements CourseDBStructureInterface{
 		
 		if(hashTable[index] == null)
 			throw new IOException();
-		System.out.println("kikikiii: " + hashTable[index].toString());
-		return hashTable[index];
+		
+		for(int i = 0; i < hashTable[index].size(); i++) {
+			CourseDBElement f = (CourseDBElement) hashTable[index].get(i);
+			if(crn == f.getCRN()) 
+				return f;
+		}
+	//	System.out.println("kikikiii: " + hashTable[index].toString());
+		//return hashTable[index];
+		throw new IOException();
 	}
 
 	/**
@@ -95,12 +106,17 @@ public class CourseDBStructure<T> implements CourseDBStructureInterface{
 	@Override
 	public ArrayList<String> showAll() {
 		ArrayList<String> list = new ArrayList<>();
+		CourseDBElement ref = null;
 		
-		for(CourseDBElement element : hashTable) {
-			if(element != null) {
-				list.add(element.toString());
+		for(int i = 0; i < size; i++) {
+			if(hashTable[i] != null) {
+				for(int j = 0; j < hashTable[i].size(); j++)
+					ref = (CourseDBElement) hashTable[i].get(j);
+					list.add(ref.toString());
 			}
+			
 		}
+		
 		return list;
 	}
 	
@@ -173,31 +189,16 @@ public class CourseDBStructure<T> implements CourseDBStructureInterface{
 		return n;
 	}
 	
-	boolean isPrime(int n) {
-	    //check if n is a multiple of 2
-	    if (n%2==0) return false;
-	    //if not, then just check the odds
-	    for(int i=3;i*i<=n;i+=2) {
-	        if(n%i==0)
+	public boolean isPrime(int n) {
+		
+		  //corner case
+	    if (n <= 1) return false;
+	    
+	    //check from 2 to square_root(n)
+	    for(int i = 2; i <= Math.sqrt(n); i++) {
+	        if(n % i == 0)
 	            return false;
 	    }
 	    return true;
 	}
-	
-//	//Inner class node--------------------------------------
-//	public class Node{
-//		private T data;
-//		private Node next;
-//		
-//		public Node(T data, Node next) {
-//			this.data = data;
-//			this.next = next;
-//		}
-//		
-//		public Node() {
-//			this.data = null;
-//			this.next = null;
-//		}
-//	}
-
 }
